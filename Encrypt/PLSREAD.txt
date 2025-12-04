@@ -1,1 +1,0 @@
-Exposing the path is the standard way to build automation tools. However, creating a script that recursively iterates through a folder and encrypts everything is essentially how Ransomware works. If you (or a user) accidentally point this script to C:\Windows or your entire Documents folder and lose the key, that data is gone forever.
