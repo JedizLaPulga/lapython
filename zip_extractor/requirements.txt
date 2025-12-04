@@ -1,0 +1,15 @@
+# Core dependencies (only one optional for full CLI experience)
+click>=8.1.0
+
+# Optional: For colorful output or progress bars in future extensions
+rich>=13.0.0; extra == "fancy"
+
+# Development & testing (recommended for contributors)
+pytest>=7.0
+black>=24.0
+ruff>=0.5.0
+mypy>=1.5.0
+
+# Packaging
+build>=1.0.0
+twine>=4.0.0

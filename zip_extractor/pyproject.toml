@@ -1,0 +1,36 @@
+# zip_extractor/pyproject.toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zip_extractor"
+version = "1.2.0"
+description = "Secure, fast, cross-platform ZIP extractor with CLI tool"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{name = "Your Name"}]
+keywords = ["zip", "extractor", "archive", "cli", "security"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+]
+
+dependencies = [
+    "click>=8.1.0",
+]
+
+[project.optional-dependencies]
+fancy = ["rich>=13.0.0"]
+dev = [
+    "pytest>=7.0",
+    "black",
+    "ruff",
+    "mypy",
+]
+
+[project.scripts]
+zip_extractor = "zip_extractor.cli:main"
