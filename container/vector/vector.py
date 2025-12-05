@@ -1,190 +1,235 @@
+# vector.py
 from __future__ import annotations
-from typing import TypeVar, Generic, Iterable, Any, overload
+from typing import TypeVar, Generic, Iterable, Any, Iterator
 import ctypes
+import array
+import struct
 
 T = TypeVar('T')
 
+
+# =================================================================
+# 1. Ultimate Generic Vector<T> with SVO, swap, comparisons, etc.
+# =================================================================
 class Vector(Generic[T]):
-    """The ultimate Python mimic of C++ std::vector<T>"""
-    
-    def __init__(self, capacity: int = 0):
+    _SVO_CAP = 8
+
+    def __init__(self, source: Iterable[T] | None = None):
         self._size = 0
+        self._is_small = True
+        self._small = [None] * self._SVO_CAP
+        self._large = None
         self._capacity = 0
-        self._data = None
-        if capacity > 0:
-            self.reserve(capacity)
+        if source is not None:
+            self.assign(source)
 
-    # ==================== Capacity ====================
-    def size(self) -> int:
-        return self._size
+    # --------------------- Internal ---------------------
+    def _move_to_large(self, new_cap: int):
+        if not self._is_small:
+            return
+        new_cap = max(new_cap, 16)
+        large = (ctypes.py_object * new_cap)()
+        for i in range(self._size):
+            large[i] = self._small[i]
+        self._large = large
+        self._capacity = new_cap
+        self._is_small = False
+        self._small = None
 
-    def capacity(self) -> int:
-        return self._capacity
+    def _resize(self, new_cap: int):
+        if self._is_small and new_cap <= self._SVO_CAP:
+            return
+        if self._is_small:
+            self._move_to_large(new_cap)
+            return
+        if new_cap == self._capacity:
+            return
+        new_data = (ctypes.py_object * new_cap)()
+        for i in range(self._size):
+            new_data[i] = self._large[i]
+        self._large = new_data
+        self._capacity = new_cap
 
-    def empty(self) -> bool:
-        return self._size == 0
+    # --------------------- Capacity ---------------------
+    def size(self) -> int: return self._size
+    def capacity(self) -> int: return self._SVO_CAP if self._is_small else self._capacity
+    def empty(self) -> bool: return self._size == 0
 
-    def reserve(self, new_capacity: int) -> None:
-        if new_capacity > self._capacity:
-            self._resize(new_capacity)
+    def reserve(self, n: int):
+        if n > self.capacity():
+            self._resize(max(n, self.capacity() * 2 if self.capacity() > 0 else 16))
 
-    def shrink_to_fit(self) -> None:
-        if self._size < self._capacity:
+    def shrink_to_fit(self):
+        if self._is_small:
+            return
+        if self._size <= self._SVO_CAP:
+            small = [None] * self._SVO_CAP
+            for i in range(self._size):
+                small[i] = self._large[i]
+            self._small = small
+            self._large = None
+            self._is_small = True
+            self._capacity = 0
+        elif self._size < self._capacity:
             self._resize(self._size)
 
-    def resize(self, new_size: int, value: T | None = None) -> None:
+    # --------------------- Modifiers ---------------------
+    def assign(self, source: Iterable[T] | int, value: T | None = None):
+        self.clear()
+        if isinstance(source, int):
+            self.resize(source, value)
+        else:
+            for x in source:
+                self.push_back(x)
+
+    def resize(self, new_size: int, value: T | None = None):
         if new_size > self._size:
             self.reserve(new_size)
             for i in range(self._size, new_size):
-                self._data[i] = value if value is not None else None
-        self._size = new_size
+                self.push_back(value if value is not None else None)
+        else:
+            self._size = new_size
 
-    # ==================== Element Access ====================
-    def front(self) -> T:
-        if self._size == 0: raise IndexError("front() on empty vector")
-        return self._data[0]
-
-    def back(self) -> T:
-        if self._size == 0: raise IndexError("back() on empty vector")
-        return self._data[self._size - 1]
-
-    def at(self, index: int) -> T:
-        if index < 0: index += self._size
-        if index < 0 or index >= self._size:
-            raise IndexError("vector::at() index out of range")
-        return self._data[index]
-
-    def data(self):
-        """Return a memoryview of the underlying array (like C++ data())"""
-        if self._data is None:
-            return memoryview(bytearray())
-        return memoryview(self._data)
-
-    @overload
-    def __getitem__(self, index: int) -> T: ...
-    @overload
-    def __getitem__(self, s: slice) -> list[T]: ...
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            return [self[i] for i in range(*key.indices(self._size))]
-        if key < 0: key += self._size
-        if not (0 <= key < self._size):
-            raise IndexError("vector index out of range")
-        return self._data[key]
-
-    def __setitem__(self, index: int, value: T) -> None:
-        if index < 0: index += self._size
-        if not (0 <= index < self._size):
-            raise IndexError("vector assignment index out of range")
-        self._data[index] = value
-
-    # ==================== Modifiers ====================
-    def push_back(self, value: T) -> None:
-        if self._size == self._capacity:
-            self._resize(max(1, self._capacity * 2))
-        self._data[self._size] = value
+    def push_back(self, value: T):
+        if self._size == self.capacity():
+            self.reserve(self._size + 1)
+        if self._is_small:
+            self._small[self._size] = value
+        else:
+            self._large[self._size] = value
         self._size += 1
-
-    def emplace_back(self, *args: Any) -> T:
-        """Construct element in-place (simulated)"""
-        if self._size == self._capacity:
-            self._resize(max(1, self._capacity * 2))
-        # Simulate in-place construction via the type's __new__
-        obj = object.__new__(args[0]) if args and hasattr(args[0], '__new__') else None
-        if len(args) == 1 and not isinstance(args[0], type):
-            obj = args[0]
-        elif args:
-            obj.__init__(*args[1:]) if hasattr(obj, '__init__') else None
-        self._data[self._size] = obj
-        self._size += 1
-        return obj
 
     def pop_back(self) -> T:
-        if self._size == 0:
+        if not self._size:
             raise IndexError("pop_back from empty vector")
         self._size -= 1
-        value = self._data[self._size]
-        self._data[self._size] = None
-        return value
+        val = (self._small if self._is_small else self._large)[self._size]
+        (self._small if self._is_small else self._large)[self._size] = None
+        return val
 
-    def insert(self, index: int, value: T) -> None:
-        if index < 0: index += self._size
-        if not (0 <= index <= self._size):
-            raise IndexError("insert index out of range")
-        if self._size == self._capacity:
-            self._resize(max(1, self._capacity * 2))
-        for i in range(self._size, index, -1):
-            self._data[i] = self._data[i-1]
-        self._data[index] = value
-        self._size += 1
-
-    def erase(self, first: int, last: int | None = None) -> None:
-        if first < 0: first += self._size
-        if last is None: last = first + 1
-        if last < 0: last += self._size
-        if not (0 <= first <= last <= self._size):
-            raise IndexError("erase range out of bounds")
-        count = last - first
-        for i in range(first, self._size - count):
-            self._data[i] = self._data[i + count]
-        self._size -= count
-        for i in range(self._size, self._size + count):
-            self._data[i] = None
-
-    def clear(self) -> None:
+    def clear(self):
         self._size = 0
 
-    # ==================== Iterators ====================
-    def begin(self):
-        return VectorIterator(self, 0)
-
-    def end(self):
-        return VectorIterator(self, self._size)
-
-    def __iter__(self):
-        return VectorIterator(self, 0)
-
-    # ==================== Utilities ====================
-    def __len__(self) -> int:
-        return self._size
-
-    def __repr__(self) -> str:
-        content = ', '.join(repr(x) for x in self)
-        return f"Vector[{self._size}/{self._capacity}]({content})"
-
-    def __bool__(self) -> bool:
-        return self._size > 0
-
-    # Internal resize
-    def _resize(self, new_capacity: int) -> None:
-        new_capacity = max(new_capacity, self._size)
-        if new_capacity == self._capacity:
+    def swap(self, other: 'Vector'):
+        if self is other:
             return
-        # Use array.array or ctypes for real contiguous memory if you want max speed
-        new_data = (ctypes.py_object * new_capacity)()
-        for i in range(self._size):
-            new_data[i] = self._data[i] if self._data else None
-        self._data = new_data
-        self._capacity = new_capacity
+        (self._size, other._size), \
+        (self._is_small, other._is_small), \
+        (self._small, other._small), \
+        (self._large, other._large), \
+        (self._capacity, other._capacity) = \
+        (other._size, self._size), \
+        (other._is_small, self._is_small), \
+        (other._small, self._small), \
+        (other._large, self._large), \
+        (other._capacity, self._capacity)
+
+    # --------------------- Access ---------------------
+    def __getitem__(self, i):
+        if i < 0: i += self._size
+        if not (0 <= i < self._size):
+            raise IndexError("vector index out of range")
+        return (self._small if self._is_small else self._large)[i]
+
+    def __setitem__(self, i, v):
+        if i < 0: i += self._size
+        if not (0 <= i < self._size):
+            raise IndexError("vector assignment out of range")
+        (self._small if self._is_small else self._large)[i] = v
+
+    def front(self): return self[0]
+    def back(self):  return self[self._size - 1]
+
+    # --------------------- Comparisons ---------------------
+    def __eq__(self, other): return list(self) == list(other)
+    def __ne__(self, other): return not (self == other)
+    def __lt__(self, other): return list(self) < list(other)
+    def __le__(self, other): return list(self) <= list(other)
+    def __gt__(self, other): return list(self) > list(other)
+    def __ge__(self, other): return list(self) >= list(other)
+
+    # --------------------- Iterator ---------------------
+    def __iter__(self) -> Iterator[T]:
+        if self._is_small:
+            for i in range(self._size):
+                yield self._small[i]
+        else:
+            for i in range(self._size):
+                yield self._large[i]
+
+    def __len__(self): return self._size
+    def __repr__(self):
+        data = ', '.join(repr(x) for x in self)
+        mode = "SVO" if self._is_small else "Heap"
+        return f"Vector[{self._size}/{self.capacity()}]({data}) <{mode}>"
 
 
-class VectorIterator:
-    def __init__(self, vector: Vector, index: int):
-        self.vector = vector
-        self.index = index
+# =================================================================
+# 2. vector<bool> — bit-packed specialization
+# =================================================================
+class VectorBool:
+    def __init__(self, source=None):
+        self._data = bytearray()
+        self._size = 0
+        if source is not None:
+            for b in source:
+                self.push_back(bool(b))
 
+    def push_back(self, value: bool):
+        if self._size & 7 == 0:
+            self._data.append(0)
+        if value:
+            self._data[self._size >> 3] |= (1 << (self._size & 7))
+        self._size += 1
+
+    def __getitem__(self, i):
+        if i < 0: i += self._size
+        if not (0 <= i < self._size): raise IndexError()
+        return bool(self._data[i >> 3] & (1 << (i & 7)))
+
+    def __setitem__(self, i, v: bool):
+        if i < 0: i += self._size
+        if not (0 <= i < self._size): raise IndexError()
+        byte_idx = i >> 3
+        bit = i & 7
+        if v:
+            self._data[byte_idx] |= (1 << bit)
+        else:
+            self._data[byte_idx] &= ~(1 << bit)
+
+    def __len__(self): return self._size
     def __iter__(self):
-        return self
+        for i in range(self._size):
+            yield self[i]
 
-    def __next__(self):
-        if self.index >= self.vector.size():
-            raise StopIteration
-        value = self.vector[self.index]
-        self.index += 1
-        return value
+    def __repr__(self):
+        return f"vector<bool>[{self._size}] bits={self._size} bytes={len(self._data)} {list(self)[:20]}{'...' if len(self)>20 else ''}"
 
-    def __add__(self, n: int):
-        return VectorIterator(self.vector, self.index + n)
 
-    def __sub__(self, n: int):
-        return VectorIterator(self.vector, self.index - n)
+# =================================================================
+# 3. NumericVector — 100% NumPy zero-copy compatible
+# =================================================================
+class NumericVector:
+    """Blazing fast vector for int/float with full NumPy interop"""
+    def __init__(self, data=None, dtype='q'):  # 'q' = int64, 'd' = double
+        self.array = array.array(dtype)
+        if data:
+            self.array.extend(data)
+
+    def push_back(self, x):
+        self.array.append(x)
+
+    def __getitem__(self, i):
+        return self.array[i]
+
+    def __setitem__(self, i, v):
+        self.array[i] = v
+
+    def __len__(self):
+        return len(self.array)
+
+    def __buffer__(self, flags):
+        return memoryview(self.array)
+
+    def __repr__(self):
+        return f"NumericVector[{len(self)}] {list(self.array)}"

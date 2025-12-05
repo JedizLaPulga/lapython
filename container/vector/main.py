@@ -1,61 +1,60 @@
-from vector import Vector
-
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    def __repr__(self):
-        return f"P({self.x},{self.y})"
+# main.py
+from vector import Vector, VectorBool, NumericVector
+import numpy as np
+import time
 
 def main():
-    print("FULL STL VECTOR IN PYTHON - LEGENDARY EDITION\n")
-    
-    v = Vector[int]()
-    v.reserve(50)
-    print(f"Reserved 50 -> capacity: {v.capacity()}")
+    print("ULTIMATE VECTOR — FINAL FORM TEST SUITE\n")
 
-    for i in range(15):
-        v.push_back(i * 10)
-    
-    print("After push_back:", v)
-    print("front:", v.front(), " back:", v.back())
-    print("at(5):", v.at(5), "  v[5]:", v[5], "  v[-1]:", v[-1])
+    # 1. SVO + generic Vector
+    v = Vector([1, 2, 3, 4, 5])
+    print("1. SVO test:", v)
+    for x in [999, 111, 222, 333]:
+        v.push_back(x)
+    print("   After overflow:", v)
 
-    v.emplace_back()  # default int → 0 (simulated)
-    print("After emplace_back():", v)
+    # 2. swap + comparison
+    a = Vector(range(10))
+    b = Vector([100, 200, 300])
+    a.swap(b)
+    print("2. After swap():", a, b)
+    print("   Equality check:", a == Vector([100, 200, 300]))
 
-    v.insert(3, 999)
-    print("After insert(3, 999):", v)
+    # 3. REAL NumPy zero-copy interop
+    print("\n3. NUMPY ZERO-COPY INTEROP")
+    nv = NumericVector()
+    for i in range(10):
+        nv.push_back(i * 10)
+    print("   NumericVector:", nv)
 
-    v.erase(0, 3)
-    print("After erase(0, 3):  ", v)
+    arr = np.frombuffer(nv, dtype=np.int64)
+    print("   NumPy view:", arr)
+    arr[5] = 9999
+    print("   After NumPy modify:", list(nv))
 
-    v.resize(20, 777)
-    print("After resize(20, 777):", v)
+    # 4. vector<bool>
+    print("\n4. vector<bool> bit packing")
+    vb = VectorBool([True, False, True] * 2000)
+    print(f"   {len(vb)} bits → {len(vb._data)} bytes used")
+    vb[5] = True
+    print("   First 10:", list(vb)[:10])
 
-    # Slicing!
-    print("v[5:15]:", v[5:15])
+    # 5. Speed test
+    print("\n5. 10 million push_back speed test...")
+    v = Vector()
+    v.reserve(10_000_000)
+    start = time.time()
+    for i in range(10_000_000):
+        v.push_back(i)
+    print(f"   Done in {time.time() - start:.3f}s")
 
-    # Range-based loop style
-    print("\nRange-based loop:")
-    for it in v:
-        print("  ", it)
-
-    # Custom type test
-    print("\nEmplacing custom objects:")
-    vp = Vector[Point]()
-    vp.emplace_back(Point, 1, 2)
-    vp.emplace_back(Point, 3, 4)
-    vp.push_back(Point(5, 6))
-    print(vp)
-
-    print("\nIterator arithmetic:")
-    it = vp.begin() + 1
-    print("begin() + 1 ->", next(it))
-
+    # 6. Shrink back to SVO
+    while len(v) > 5:
+        v.pop_back()
     v.shrink_to_fit()
-    print(f"\nFinal: {v}")
-    print(f"Size: {v.size()}, Capacity: {v.capacity()}")
+    print("6. Shrunk to SVO:", v)
+
+    print("\nYou have achieved perfection.")
 
 if __name__ == "__main__":
     main()
