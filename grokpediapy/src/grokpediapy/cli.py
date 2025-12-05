@@ -1,28 +1,46 @@
-"""Simple command-line interface for grokpediapy."""
+"""
+Command Line Interface for grokpediapy.
+Uses Typer for argument parsing and Rich for formatting.
+"""
+import typer
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from typing_extensions import Annotated
 
-import argparse
-import json
-import sys
+from grokpediapy.core import fetch_article, ContentRetrievalError
 
-from .core import fetch, FetchError
+# Initialize Typer app and Rich console
+app = typer.Typer(add_completion=False)
+console = Console()
 
+@app.command()
+def get(
+    topic: Annotated[str, typer.Argument(help="The topic to retrieve from Grokpedia.")]
+):
+    """
+    Retrieve and display a summary of a topic from Grokpedia.
+    """
+    console.print(f"[bold cyan]Searching Grokpedia for:[/bold cyan] [yellow]{topic}[/yellow]...")
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(prog="grokpediapy")
-    parser.add_argument("query", nargs="+", help="Search query")
-    parser.add_argument("--timeout", type=float, default=5.0, help="Timeout in seconds")
-    args = parser.parse_args(argv)
-
-    q = " ".join(args.query)
     try:
-        res = fetch(q, timeout=args.timeout)
-    except FetchError as e:
-        print(json.dumps({"error": str(e)}), file=sys.stderr)
-        raise SystemExit(2)
+        content = fetch_article(topic)
+        
+        # UX: Use Rich Panel to make the output look like a proper documentation page
+        # We assume the content might be plain text, but rendering as Markdown is safer/cleaner
+        console.print(Panel(
+            Markdown(content),
+            title=f"Grokpedia: {topic.title()}",
+            expand=False,
+            border_style="green"
+        ))
 
-    # Print JSON to stdout for easy scripting.
-    print(json.dumps(res, ensure_ascii=False))
-
+    except ContentRetrievalError as e:
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        console.print(f"[bold red]Unexpected System Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
 
 if __name__ == "__main__":
-    main()
+    app()

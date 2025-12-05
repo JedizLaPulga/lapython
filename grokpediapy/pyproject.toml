@@ -1,16 +1,21 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "grokpediapy"
 version = "0.1.0"
-description = "Small secure retrieval stub for demos and testing"
-authors = [ { name = "Your Name", email = "you@example.com" } ]
+description = "A secure CLI tool to retrieve content from Grokpedia."
+authors = ["JediZPython <secure-dev@example.com>"]
 readme = "README.md"
-requires-python = ">=3.8"
-license = { text = "MIT" }
-dependencies = []
+packages = [{include = "grokpediapy", from = "src"}]
 
-[project.scripts]
-grokpediapy = "grokpediapy.cli:main"
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.0"
+typer = {extras = ["all"], version = "^0.9.0"}
+rich = "^13.7.0"
+
+[tool.poetry.scripts]
+grokpediapy = "grokpediapy.cli:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
