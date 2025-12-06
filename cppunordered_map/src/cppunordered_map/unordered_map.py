@@ -11,7 +11,9 @@ class _HashNode(Generic[K, V]):
         self.value = value
         self.next = next_node
 
-class UnorderedMap(Generic[K, V]):
+from cppbase import Unordered
+
+class UnorderedMap(Unordered, Generic[K, V]):
     __slots__ = ('_buckets', '_size', '_bucket_count', '_max_load_factor')
     
     # std::unordered_map implementation using Separate Chaining (buckets)

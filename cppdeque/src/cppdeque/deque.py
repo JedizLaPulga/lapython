@@ -4,7 +4,8 @@ import sys
 
 T = TypeVar('T')
 
-class Deque(Generic[T]):
+from cppbase import Sequence
+class Deque(Sequence, Generic[T]):
     __slots__ = ('_map', '_block_size', '_start_idx', '_size')
     
     # Standard block size for a deque (often 4KB in C++, we use smaller for Python overhead balance)

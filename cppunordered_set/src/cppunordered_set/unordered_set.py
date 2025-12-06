@@ -9,7 +9,9 @@ class _SetNode(Generic[T]):
         self.key = key
         self.next = next_node
 
-class UnorderedSet(Generic[T]):
+from cppbase import Unordered
+
+class UnorderedSet(Unordered, Generic[T]):
     __slots__ = ('_buckets', '_size', '_bucket_count', '_max_load_factor')
     
     # std::unordered_set implementation (Hash Set with Buckets)

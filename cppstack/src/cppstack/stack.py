@@ -10,7 +10,9 @@ class ContainerProtocol(Protocol):
     def empty(self) -> bool: ...
     def size(self) -> int: ...
 
-class Stack(Generic[T]):
+from cppbase import Adapter
+
+class Stack(Adapter, Generic[T]):
     __slots__ = ('c',)
 
     def __init__(self, container: Any | None = None):

@@ -15,7 +15,9 @@ class _Node(Generic[K, V]):
         self.color = color # True = Red, False = Black
         self.parent = parent
 
-class Map(Generic[K, V]):
+from cppbase import Associative
+
+class Map(Associative, Generic[K, V]):
     __slots__ = ('_root', '_size')
     
     # Red-Black Tree Implementation

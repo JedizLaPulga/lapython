@@ -4,7 +4,9 @@ import ctypes
 
 T = TypeVar('T')
 
-class Array(Generic[T]):
+from cppbase import Sequence
+
+class Array(Sequence, Generic[T]):
     __slots__ = ('_data', '_size')
 
     def __init__(self, size: int, init_value: T | None = None, source: Iterable[T] | None = None):

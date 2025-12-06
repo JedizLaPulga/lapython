@@ -12,7 +12,9 @@ class ListNode(Generic[T]):
         self.prev = prev
         self.next = next
 
-class List(Generic[T]):
+from cppbase import Sequence
+
+class List(Sequence, Generic[T]):
     __slots__ = ('_head', '_tail', '_size')
 
     def __init__(self, source: Iterable[T] | None = None):

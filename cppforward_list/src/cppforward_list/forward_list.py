@@ -10,7 +10,9 @@ class ForwardNode(Generic[T]):
         self.value = value
         self.next = next_node
 
-class ForwardList(Generic[T]):
+from cppbase import Sequence
+
+class ForwardList(Sequence, Generic[T]):
     __slots__ = ('_head', '_size')
 
     def __init__(self, source: Iterable[T] | None = None):

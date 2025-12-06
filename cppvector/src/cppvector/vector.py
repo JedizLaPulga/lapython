@@ -8,10 +8,12 @@ import struct
 T = TypeVar('T')
 
 
+from cppbase import Sequence
+
 # =================================================================
 # 1. Ultimate Generic Vector<T> with SVO, swap, comparisons, etc.
 # =================================================================
-class Vector(Generic[T]):
+class Vector(Sequence, Generic[T]):
     _SVO_CAP = 8
 
     def __init__(self, source: Iterable[T] | None = None):

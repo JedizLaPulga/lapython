@@ -12,7 +12,9 @@ class _Node(Generic[T]):
         self.right: _Node[T] | None = None
         self.parent = parent
 
-class Set(Generic[T]):
+from cppbase import Associative
+
+class Set(Associative, Generic[T]):
     __slots__ = ('_root', '_size')
     
     # std::set implementation (Ordered Unique Keys)
