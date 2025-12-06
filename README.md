@@ -32,14 +32,6 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::stack` | `cppstack` | Container adapter (LIFO) | Wraps any container (Dependency Injection standard) |
 | `std::bitset` | `cppbitset` | Fixed-size bit array | `&`, `|`, `^` operators, `flip`, `count` |
 
-### 🟡 In Development
-| Container | Description | Planned Features |
-|-----------|-------------|------------------|
-| `std::deque` | Double-ended queue | Block-based allocation, O(1) random access |
-| `std::stack` | LIFO adapter | Underlying container dependency injection |
-| `std::queue` | FIFO adapter | Underlying container dependency injection |
-| `std::priority_queue` | Heap-based queue | `make_heap`, `push_heap`, Custom comparators |
-| `std::bitset` | Space-efficient bit array | Bitwise operators, string conversion |
 
 ### 🔴 Planned (Future)
 *   **Associative Containers** (Tree-based)
