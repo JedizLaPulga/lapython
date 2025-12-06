@@ -25,6 +25,7 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 |-----------|---------------|-------------|--------------|
 | `std::vector` | `cppvector` | Dynamic contiguous array | `reserve`, `capacity`, `shrink_to_fit`, SVO (Small Vector Optimization) |
 | `std::list` | `cpplist` | Doubly-linked list | `push_front`, `splice`, `swap`, Stable Iterators |
+| `std::forward_list` | `cppforward_list` | Singly-linked list | `push_front`, `insert_after`, Low memory overhead |
 | `std::array` | `cpparray` | Fixed-size contiguous array | No overhead, strictly fixed size, `fill`, `swap` |
 | `std::deque` | `cppdeque` | Map of fixed-size blocks | **O(1) random access**, O(1) push/pop both ends |
 | `std::queue` | `cppqueue` | Container adapter (FIFO) | Wraps any container (Dependency Injection standard) |
