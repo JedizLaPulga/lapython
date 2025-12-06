@@ -36,6 +36,12 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::set` | `cppset` | Ordered Associative (Tree) | **Sorted Unique Keys**, `lower_bound`, `upper_bound` |
 | `std::unordered_map` | `cppunordered_map` | Hash Table (Buckets) | **Separate Chaining**, `load_factor`, `bucket_count` |
 | `std::unordered_set` | `cppunordered_set` | Hash Table (Buckets) | **Separate Chaining**, `load_factor`, O(1) avg |
+| `std::multimap` | `cppmultimap` | Sorted Associative (Tree) | **Multiple Keys**, `count`, `erase` (removes all), `equal_range` |
+| `std::multiset` | `cppmultiset` | Sorted Associative (Tree) | **Multiple Keys**, `count`, `insert` (dupes allowed) |
+| `std::unordered_multimap` | `cppunordered_multimap` | Hash Table (Buckets) | **Multiple Keys**, Separate Chaining |
+| `std::unordered_multiset` | `cppunordered_multiset` | Hash Table (Buckets) | **Multiple Keys**, Separate Chaining |
+| `std::span` | `cppspan` | Non-owning View | **Zero Cost View** over contiguous integers, `subspan`, `first`, `last` |
+| `plf::hive` | `cpphive` | Bucket Array (Colony) | **O(1) Erase**, Stable Iterators, Skipfield iteration |
 
 ---
 
