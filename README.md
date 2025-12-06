@@ -42,6 +42,7 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::unordered_multiset` | `cppunordered_multiset` | Hash Table (Buckets) | **Multiple Keys**, Separate Chaining |
 | `std::span` | `cppspan` | Non-owning View | **Zero Cost View** over contiguous integers, `subspan`, `first`, `last` |
 | `plf::hive` | `cpphive` | Bucket Array (Colony) | **O(1) Erase**, Stable Iterators, Skipfield iteration |
+| `std::inplace_vector` | `cppinplace_vector` | Fixed-capacity Vector | **No Dynamic Alloc**, Fixed Capacity, `try_push_back` |
 
 ---
 
