@@ -11,7 +11,9 @@ class ContainerProtocol(Protocol):
     def empty(self) -> bool: ...
     def size(self) -> int: ...
 
-class Queue(Generic[T]):
+from cppbase import Adapter
+
+class Queue(Adapter, Generic[T]):
     __slots__ = ('c',)
 
     def __init__(self, container: Any | None = None):
