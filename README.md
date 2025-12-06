@@ -35,16 +35,6 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::map` | `cppmap` | Ordered Associative (Tree) | **Sorted Keys**, `lower_bound`, `upper_bound`, O(log N) |
 | `std::unordered_map` | `cppunordered_map` | Hash Table (Buckets) | **Separate Chaining**, `load_factor`, `bucket_count` |
 
-
-### 🔴 Planned (Future)
-*   **Associative Containers** (Tree-based)
-    *   `std::set` / `std::multiset` (Red-Black Tree implementation)
-    *   `std::map` / `std::multimap`
-*   **Unordered Containers** (Hash-based)
-    *   `std::unordered_set`
-    *   `std::unordered_map`
-    *   (Custom load factor and hasher support)
-
 ---
 
 ## 🧮 Algorithms (Coming Soon)
