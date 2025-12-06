@@ -35,6 +35,7 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::map` | `cppmap` | Ordered Associative (Tree) | **Sorted Keys**, `lower_bound`, `upper_bound`, O(log N) |
 | `std::set` | `cppset` | Ordered Associative (Tree) | **Sorted Unique Keys**, `lower_bound`, `upper_bound` |
 | `std::unordered_map` | `cppunordered_map` | Hash Table (Buckets) | **Separate Chaining**, `load_factor`, `bucket_count` |
+| `std::unordered_set` | `cppunordered_set` | Hash Table (Buckets) | **Separate Chaining**, `load_factor`, O(1) avg |
 
 ---
 
