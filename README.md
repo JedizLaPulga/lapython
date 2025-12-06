@@ -30,6 +30,7 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::queue` | `cppqueue` | Container adapter (FIFO) | Wraps any container (Dependency Injection standard) |
 | `std::priority_queue` | `cpppriority_queue` | Container adapter (Max Heap) | **Strict MAX Heap** (Python default is Min), `top`, `pop` |
 | `std::stack` | `cppstack` | Container adapter (LIFO) | Wraps any container (Dependency Injection standard) |
+| `std::bitset` | `cppbitset` | Fixed-size bit array | `&`, `|`, `^` operators, `flip`, `count` |
 
 ### 🟡 In Development
 | Container | Description | Planned Features |
