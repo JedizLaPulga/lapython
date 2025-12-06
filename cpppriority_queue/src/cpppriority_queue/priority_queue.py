@@ -4,7 +4,9 @@ import heapq
 
 T = TypeVar('T')
 
-class PriorityQueue(Generic[T]):
+from cppbase import Adapter
+
+class PriorityQueue(Adapter, Generic[T]):
     __slots__ = ('_data', '_comparator')
 
     def __init__(self, source: Iterable[T] | None = None, key: Callable[[T], Any] | None = None):

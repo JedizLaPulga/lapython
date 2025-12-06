@@ -1,7 +1,10 @@
 from __future__ import annotations
 from typing import Union, Iterable
 
-class Bitset:
+from typing import Union, Iterable
+from cppbase import Container
+
+class Bitset(Container):
     __slots__ = ('_val', '_nbits')
 
     def __init__(self, nbits: int, val: Union[int, str, None] = None):
