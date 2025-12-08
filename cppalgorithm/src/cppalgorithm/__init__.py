@@ -39,6 +39,22 @@ from .numeric import (
     adjacent_difference
 )
 
+from .set_operations import (
+    merge,
+    includes,
+    set_union,
+    set_intersection,
+    set_difference,
+    set_symmetric_difference
+)
+
+from .min_max import (
+    min_element,
+    max_element,
+    minmax_element,
+    clamp
+)
+
 __all__ = [
     'for_each', 
     'find', 
@@ -68,5 +84,15 @@ __all__ = [
     'accumulate',
     'inner_product',
     'partial_sum',
-    'adjacent_difference'
+    'adjacent_difference',
+    'merge',
+    'includes',
+    'set_union',
+    'set_intersection',
+    'set_difference',
+    'set_symmetric_difference',
+    'min_element',
+    'max_element',
+    'minmax_element',
+    'clamp'
 ]
