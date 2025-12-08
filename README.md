@@ -43,6 +43,8 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 | `std::span` | `cppspan` | Non-owning View | **Zero Cost View** over contiguous integers, `subspan`, `first`, `last` |
 | `plf::hive` | `cpphive` | Bucket Array (Colony) | **O(1) Erase**, Stable Iterators, Skipfield iteration |
 | `std::inplace_vector` | `cppinplace_vector` | Fixed-capacity Vector | **No Dynamic Alloc**, Fixed Capacity, `try_push_back` |
+| `std::flat_map` | `cppflat_map` | Sorted Vector Map | **Cache Friendly**, O(log N) lookup, Sorted Keys |
+| `std::flat_set` | `cppflat_set` | Sorted Vector Set | **Cache Friendly**, O(log N) lookup, Sorted Keys |
 
 ---
 
