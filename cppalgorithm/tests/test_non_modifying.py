@@ -1,0 +1,59 @@
+import unittest
+from cppalgorithm import (
+    for_each, find, find_if, find_if_not,
+    count, count_if, all_of, any_of, none_of
+)
+
+class TestNonModifying(unittest.TestCase):
+    def test_for_each(self):
+        data = [1, 2, 3]
+        res = []
+        for_each(data, lambda x: res.append(x * 2))
+        self.assertEqual(res, [2, 4, 6])
+
+    def test_find(self):
+        data = [10, 20, 30, 40]
+        self.assertEqual(find(data, 30), 2)
+        self.assertEqual(find(data, 99), -1)
+
+    def test_find_if(self):
+        data = [1, 3, 4, 5]
+        # Find first even number
+        idx = find_if(data, lambda x: x % 2 == 0)
+        self.assertEqual(idx, 2) # element 4
+
+        idx_not_found = find_if(data, lambda x: x > 10)
+        self.assertEqual(idx_not_found, -1)
+
+    def test_find_if_not(self):
+        data = [1, 3, 5, 4]
+        # Find first NOT odd (even)
+        idx = find_if_not(data, lambda x: x % 2 != 0)
+        self.assertEqual(idx, 3) # element 4
+
+    def test_count(self):
+        data = [1, 2, 3, 2, 1, 2]
+        self.assertEqual(count(data, 2), 3)
+        self.assertEqual(count(data, 99), 0)
+
+    def test_count_if(self):
+        data = [1, 2, 3, 4, 5, 6]
+        # Count evens
+        c = count_if(data, lambda x: x % 2 == 0)
+        self.assertEqual(c, 3)
+
+    def test_all_any_none(self):
+        data = [2, 4, 6]
+        is_even = lambda x: x % 2 == 0
+        is_odd = lambda x: x % 2 != 0
+        
+        self.assertTrue(all_of(data, is_even))
+        self.assertFalse(any_of(data, is_odd))
+        self.assertTrue(none_of(data, is_odd))
+        
+        data_mixed = [2, 3, 4]
+        self.assertFalse(all_of(data_mixed, is_even))
+        self.assertTrue(any_of(data_mixed, is_odd))
+
+if __name__ == '__main__':
+    unittest.main()

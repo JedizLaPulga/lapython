@@ -48,37 +48,35 @@ Whether you need a **doubly-linked list** for O(1) splices, a **vector** with ca
 
 ---
 
-## 🧮 Algorithms (Coming Soon)
+## 🧮 Algorithms (Implemented)
 
-We are porting the `<algorithm>` header to work generically across all LaPython containers.
+We have ported the core `<algorithm>` and `<numeric>` headers to work generically with Python Iterables and MutableSequences.
 
 ### Non-Modifying Sequence Operations
 *   `find`, `find_if`, `find_if_not`
 *   `count`, `count_if`
-*   `mismatch`, `equal`
-*   `search`, `search_n`
+*   `all_of`, `any_of`, `none_of`
+*   `for_each`
 
 ### Modifying Sequence Operations
-*   `copy`, `copy_if`, `copy_n`, `copy_backward`
-*   `move`, `move_backward`
+*   `copy`, `copy_if`, `copy_n`
 *   `fill`, `fill_n`
-*   `transform`
-*   `generate`, `generate_n`
-*   `remove`, `remove_if` (Erase-remove idiom helpers)
-*   `unique`
-*   `reverse`, `rotate`, `shuffle`
+*   `transform` (Map)
+*   `generate`
+*   `replace`, `replace_if`
 
 ### Sorting & Binary Search
-*   `sort` (Introsort hybrid)
+*   `sort` (Timsort wrapper)
 *   `stable_sort`
-*   `partial_sort`, `nth_element`
-*   `lower_bound`, `upper_bound`, `equal_range`, `binary_search`
+*   `lower_bound`, `upper_bound`, `binary_search`
+*   `is_sorted`
 
-### Heap Operations
-*   `make_heap`, `push_heap`, `pop_heap`, `sort_heap`
-
-### Numeric
-*   `iota`, `accumulate`, `inner_product`, `adjacent_difference`, `partial_sum`
+### Numeric (from `<numeric>`)
+*   `iota` (Sequential fill)
+*   `accumulate` (Reduce/Sum)
+*   `inner_product` (Dot product)
+*   `partial_sum` (Prefix sum)
+*   `adjacent_difference`
 
 ---
 
