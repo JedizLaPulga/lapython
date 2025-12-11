@@ -19,7 +19,15 @@ from .modifying import (
     generate,
     transform,
     replace,
-    replace_if
+    replace_if,
+    remove,
+    remove_if,
+    unique,
+    reverse,
+    rotate,
+    shuffle,
+    partition,
+    stable_partition
 )
 
 from .sorting import (
@@ -74,6 +82,14 @@ __all__ = [
     'transform',
     'replace',
     'replace_if',
+    'remove',
+    'remove_if',
+    'unique',
+    'reverse',
+    'rotate',
+    'shuffle',
+    'partition',
+    'stable_partition',
     'sort',
     'stable_sort',
     'is_sorted',
