@@ -69,6 +69,15 @@ from .min_max import (
     clamp
 )
 
+from .heap import (
+    push_heap,
+    pop_heap,
+    make_heap,
+    sort_heap,
+    is_heap,
+    is_heap_until
+)
+
 __all__ = [
     'for_each', 
     'find', 
@@ -122,5 +131,11 @@ __all__ = [
     'min_element',
     'max_element',
     'minmax_element',
-    'clamp'
+    'clamp',
+    'push_heap',
+    'pop_heap',
+    'make_heap',
+    'sort_heap',
+    'is_heap',
+    'is_heap_until'
 ]
