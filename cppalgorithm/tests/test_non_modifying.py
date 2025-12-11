@@ -56,8 +56,6 @@ class TestNonModifying(unittest.TestCase):
         self.assertFalse(all_of(data_mixed, is_even))
         self.assertTrue(any_of(data_mixed, is_odd))
 
-        self.assertTrue(any_of(data_mixed, is_odd))
-
     def test_mismatch(self):
         seq1 = [1, 2, 3, 4]
         seq2 = [1, 2, 5, 4]
@@ -103,4 +101,6 @@ class TestNonModifying(unittest.TestCase):
         
         s5 = [1, 2]
         self.assertTrue(lexicographical_compare(s5, s1))
+
+if __name__ == '__main__':
     unittest.main()
