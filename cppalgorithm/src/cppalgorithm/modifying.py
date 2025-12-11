@@ -1,5 +1,6 @@
 from typing import Iterable, Callable, TypeVar, Any, MutableSequence, Union, Optional
 import random
+from typing import Iterable, Callable, TypeVar, Any, MutableSequence, Union, Optional
 
 T = TypeVar('T')
 U = TypeVar('U')
@@ -220,3 +221,107 @@ def stable_partition(sequence: MutableSequence[T], predicate: Callable[[T], bool
         idx += 1
         
     return split_point
+
+def next_permutation(sequence: MutableSequence[T], comparator: Optional[Callable[[T, T], bool]] = None) -> bool:
+    """
+    Rearranges elements into the next lexicographically greater permutation.
+    Returns True if such permutation exists, False if it was the last (and wraps to sorted).
+    """
+    n = len(sequence)
+    if n <= 1:
+        return False
+        
+    i = n - 2
+    while i >= 0:
+        # Check if sequence[i] < sequence[i+1]
+        is_less = False
+        if comparator:
+            is_less = comparator(sequence[i], sequence[i+1])
+        else:
+            is_less = sequence[i] < sequence[i+1]
+            
+        if is_less:
+            break
+        i -= 1
+        
+    if i < 0:
+        sequence.reverse()
+        return False
+        
+    j = n - 1
+    while j > i:
+        # Check sequence[i] < sequence[j]
+        is_less = False
+        if comparator:
+            is_less = comparator(sequence[i], sequence[j])
+        else:
+            is_less = sequence[i] < sequence[j]
+            
+        if is_less:
+            break
+        j -= 1
+        
+    sequence[i], sequence[j] = sequence[j], sequence[i]
+    
+    # Reverse from i+1 to end
+    left = i + 1
+    right = n - 1
+    while left < right:
+        sequence[left], sequence[right] = sequence[right], sequence[left]
+        left += 1
+        right -= 1
+        
+    return True
+
+def prev_permutation(sequence: MutableSequence[T], comparator: Optional[Callable[[T, T], bool]] = None) -> bool:
+    """
+    Rearranges elements into the previous lexicographically ordered permutation.
+    Returns True if such permutation exists, False if it was the first (and wraps to descending).
+    """
+    n = len(sequence)
+    if n <= 1:
+        return False
+        
+    i = n - 2
+    while i >= 0:
+        # Check if sequence[i] > sequence[i+1]
+        is_greater = False
+        if comparator:
+            # if comp(a, b) means a < b
+            # we want a > b which means comp(b, a)
+            is_greater = comparator(sequence[i+1], sequence[i])
+        else:
+            is_greater = sequence[i] > sequence[i+1]
+            
+        if is_greater:
+            break
+        i -= 1
+        
+    if i < 0:
+        sequence.reverse()
+        return False
+        
+    j = n - 1
+    while j > i:
+        # Check sequence[i] > sequence[j] -> comp(seq[j], seq[i])
+        is_greater = False
+        if comparator:
+            is_greater = comparator(sequence[j], sequence[i])
+        else:
+            is_greater = sequence[i] > sequence[j]
+            
+        if is_greater:
+            break
+        j -= 1
+        
+    sequence[i], sequence[j] = sequence[j], sequence[i]
+    
+    # Reverse from i+1 to end
+    left = i + 1
+    right = n - 1
+    while left < right:
+        sequence[left], sequence[right] = sequence[right], sequence[left]
+        left += 1
+        right -= 1
+        
+    return True

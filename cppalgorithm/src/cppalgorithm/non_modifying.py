@@ -1,4 +1,5 @@
-from typing import Iterable, Callable, TypeVar, Any, Optional
+from typing import Iterable, Callable, TypeVar, Any, Optional, Tuple, Sequence
+import collections
 
 T = TypeVar('T')
 
@@ -85,3 +86,158 @@ def none_of(iterable: Iterable[T], predicate: Callable[[T], bool]) -> bool:
         if predicate(item):
             return False
     return True
+
+def mismatch(iterable1: Iterable[T], iterable2: Iterable[T], 
+             predicate: Optional[Callable[[T, T], bool]] = None) -> Tuple[int, int]:
+    """
+    Returns the first index where two iterables differ.
+    Returns (-1, -1) if they are equal (up to the length of the shorter one, 
+    or if both end together). 
+    Wait, C++ returns pair of iterators to the first mismatch.
+    If no mismatch found (one sequence exhausted), returns (end, corresponding).
+    
+    Here: returns (index, index) of the first mismatch.
+    If one is shorter and matches prefix of other, returns (len_shorter, len_shorter).
+    If both end same time and match, returns (len, len).
+    """
+    iter1 = iter(iterable1)
+    iter2 = iter(iterable2)
+    idx = 0
+    while True:
+        try:
+            val1 = next(iter1)
+        except StopIteration:
+            val1 = None
+            
+        try:
+            val2 = next(iter2)
+        except StopIteration:
+            val2 = None
+            
+        if val1 is None and val2 is None:
+            # Both ended
+            return (idx, idx)
+        
+        if val1 is None or val2 is None:
+            # One ended => mismatch at idx
+            return (idx, idx)
+            
+        is_same = False
+        if predicate:
+            is_same = predicate(val1, val2)
+        else:
+            is_same = (val1 == val2)
+            
+        if not is_same:
+            return (idx, idx)
+            
+        idx += 1
+
+def equal(iterable1: Iterable[T], iterable2: Iterable[T], 
+          predicate: Optional[Callable[[T, T], bool]] = None) -> bool:
+    """
+    Returns True if ranges are equal.
+    Considers lengths.
+    """
+    iter1 = iter(iterable1)
+    iter2 = iter(iterable2)
+    
+    while True:
+        try:
+            val1 = next(iter1)
+        except StopIteration:
+            val1 = None
+            
+        try:
+            val2 = next(iter2)
+        except StopIteration:
+            val2 = None
+            
+        if val1 is None and val2 is None:
+            return True
+        if val1 is None or val2 is None:
+            return False
+            
+        is_same = False
+        if predicate:
+            is_same = predicate(val1, val2)
+        else:
+            is_same = (val1 == val2)
+            
+        if not is_same:
+            return False
+
+def is_permutation(iterable1: Iterable[T], iterable2: Iterable[T], 
+                   predicate: Optional[Callable[[T, T], bool]] = None) -> bool:
+    """
+    Returns True if iterable1 is a permutation of iterable2.
+    """
+    # If predicate is None, use Counter for O(N)
+    if predicate is None:
+        return collections.Counter(iterable1) == collections.Counter(iterable2)
+    
+    # If predicate is custom, O(N^2)
+    # Convert to lists
+    list1 = list(iterable1)
+    list2 = list(iterable2)
+    
+    if len(list1) != len(list2):
+        return False
+        
+    # For each element in list1, try to find a match in list2 and remove it (or mark used)
+    # To handle duplicates correctly with custom predicate, we need to match counts.
+    # This is expensive: O(N^2)
+    matched = [False] * len(list2)
+    for item1 in list1:
+        found = False
+        for i, item2 in enumerate(list2):
+            if not matched[i]:
+                if predicate(item1, item2):
+                    matched[i] = True
+                    found = True
+                    break
+        if not found:
+            return False
+    return True
+
+def lexicographical_compare(iterable1: Iterable[T], iterable2: Iterable[T], 
+                            comparator: Optional[Callable[[T, T], bool]] = None) -> bool:
+    """
+    Returns True if iterable1 is lexicographically less than iterable2.
+    """
+    iter1 = iter(iterable1)
+    iter2 = iter(iterable2)
+    
+    while True:
+        try:
+            val1 = next(iter1)
+        except StopIteration:
+            val1 = None
+            
+        try:
+            val2 = next(iter2)
+        except StopIteration:
+            val2 = None
+            
+        if val2 is None:
+            # iter2 ended (or both ended)
+            # if iter2 ended, iter1 cannot be strictly less unless iter1 also ended (then equal)
+            # if both ended, equal -> False (strictly less check usually)
+            return False
+        if val1 is None:
+            # iter1 ended, iter2 has value -> iter1 < iter2
+            return True
+            
+        # Compare values
+        if comparator:
+            if comparator(val1, val2): # val1 < val2
+                return True
+            if comparator(val2, val1): # val2 < val1 => val1 > val2
+                return False
+            # equal, continue
+        else:
+            if val1 < val2:
+                return True
+            if val2 < val1:
+                return False
+            # equal continue

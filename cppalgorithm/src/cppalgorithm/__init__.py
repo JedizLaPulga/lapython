@@ -7,7 +7,11 @@ from .non_modifying import (
     count_if, 
     all_of, 
     any_of, 
-    none_of
+    none_of,
+    mismatch,
+    equal,
+    is_permutation,
+    lexicographical_compare
 )
 
 from .modifying import (
@@ -27,7 +31,9 @@ from .modifying import (
     rotate,
     shuffle,
     partition,
-    stable_partition
+    stable_partition,
+    next_permutation,
+    prev_permutation
 )
 
 from .sorting import (
@@ -73,6 +79,10 @@ __all__ = [
     'all_of', 
     'any_of', 
     'none_of',
+    'mismatch',
+    'equal',
+    'is_permutation',
+    'lexicographical_compare',
     'copy',
     'copy_if',
     'copy_n',
@@ -90,6 +100,8 @@ __all__ = [
     'shuffle',
     'partition',
     'stable_partition',
+    'next_permutation',
+    'prev_permutation',
     'sort',
     'stable_sort',
     'is_sorted',
