@@ -1,7 +1,8 @@
 import unittest
 from cppalgorithm import (
     for_each, find, find_if, find_if_not,
-    count, count_if, all_of, any_of, none_of
+    count, count_if, all_of, any_of, none_of,
+    mismatch, equal, is_permutation, lexicographical_compare
 )
 
 class TestNonModifying(unittest.TestCase):
@@ -55,5 +56,51 @@ class TestNonModifying(unittest.TestCase):
         self.assertFalse(all_of(data_mixed, is_even))
         self.assertTrue(any_of(data_mixed, is_odd))
 
-if __name__ == '__main__':
+        self.assertTrue(any_of(data_mixed, is_odd))
+
+    def test_mismatch(self):
+        seq1 = [1, 2, 3, 4]
+        seq2 = [1, 2, 5, 4]
+        self.assertEqual(mismatch(seq1, seq2), (2, 2))
+        
+        seq3 = [1, 2, 3]
+        self.assertEqual(mismatch(seq1, seq3), (3, 3)) # Mismatch at end of shortest
+        
+        self.assertEqual(mismatch(seq1, seq1), (4, 4)) # Equal
+        
+    def test_equal(self):
+        seq1 = [1, 2, 3]
+        seq2 = [1, 2, 3]
+        seq3 = [1, 2, 4]
+        seq4 = [1, 2, 3, 4]
+        
+        self.assertTrue(equal(seq1, seq2))
+        self.assertFalse(equal(seq1, seq3))
+        self.assertFalse(equal(seq1, seq4))
+        
+    def test_is_permutation(self):
+        seq1 = [1, 2, 3]
+        seq2 = [3, 1, 2]
+        seq3 = [1, 2, 2]
+        
+        self.assertTrue(is_permutation(seq1, seq2))
+        self.assertFalse(is_permutation(seq1, seq3))
+        
+    def test_lexicographical_compare(self):
+        s1 = [1, 2, 3]
+        s2 = [1, 2, 4]
+        s3 = [1, 2, 3]
+        s4 = [1, 2, 3, 0] # longer but prefix matches, s1 ended first -> s1 < s4
+        
+        self.assertTrue(lexicographical_compare(s1, s2))
+        self.assertFalse(lexicographical_compare(s2, s1))
+        self.assertFalse(lexicographical_compare(s1, s3)) # Equal is not strictly less
+        
+        # s1 is shorter than s4, prefix matches.
+        # [1, 2, 3] vs [1, 2, 3, 0]
+        # s1 ends, s2 has value -> s1 < s4
+        self.assertTrue(lexicographical_compare(s1, s4))
+        
+        s5 = [1, 2]
+        self.assertTrue(lexicographical_compare(s5, s1))
     unittest.main()
