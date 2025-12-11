@@ -11,7 +11,12 @@ from .non_modifying import (
     mismatch,
     equal,
     is_permutation,
-    lexicographical_compare
+    lexicographical_compare,
+    search,
+    find_end,
+    find_first_of,
+    adjacent_find,
+    search_n
 )
 
 from .modifying import (
@@ -92,6 +97,11 @@ __all__ = [
     'equal',
     'is_permutation',
     'lexicographical_compare',
+    'search',
+    'find_end',
+    'find_first_of',
+    'adjacent_find',
+    'search_n',
     'copy',
     'copy_if',
     'copy_n',

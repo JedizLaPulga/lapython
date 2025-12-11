@@ -241,3 +241,152 @@ def lexicographical_compare(iterable1: Iterable[T], iterable2: Iterable[T],
             if val2 < val1:
                 return False
             # equal continue
+
+def search(sequence: Sequence[T], subsequence: Sequence[T], 
+           predicate: Optional[Callable[[T, T], bool]] = None) -> int:
+    """
+    Searches for the first occurrence of subsequence in sequence.
+    Returns the starting index of the match, or -1 if not found.
+    Equivalent to std::search.
+    """
+    n = len(sequence)
+    m = len(subsequence)
+    
+    if m == 0:
+        return 0
+    if m > n:
+        return -1
+        
+    for i in range(n - m + 1):
+        match = True
+        for j in range(m):
+            if predicate:
+                if not predicate(sequence[i + j], subsequence[j]):
+                    match = False
+                    break
+            else:
+                if sequence[i + j] != subsequence[j]:
+                    match = False
+                    break
+        if match:
+            return i
+            
+    return -1
+
+def find_end(sequence: Sequence[T], subsequence: Sequence[T],
+             predicate: Optional[Callable[[T, T], bool]] = None) -> int:
+    """
+    Searches for the LAST occurrence of subsequence in sequence.
+    Returns the starting index of the match, or -1 if not found.
+    Equivalent to std::find_end.
+    """
+    n = len(sequence)
+    m = len(subsequence)
+    
+    if m == 0:
+        return n # C++ says last iterator, in indices maybe length? or 0? 
+                 # std::find_end with empty sub returns last.
+    if m > n:
+        return -1
+        
+    # Search backwards
+    for i in range(n - m, -1, -1):
+        match = True
+        for j in range(m):
+            if predicate:
+                if not predicate(sequence[i + j], subsequence[j]):
+                    match = False
+                    break
+            else:
+                if sequence[i + j] != subsequence[j]:
+                    match = False
+                    break
+        if match:
+            return i
+            
+    return -1
+
+def find_first_of(sequence: Sequence[T], search_elements: Sequence[T],
+                  predicate: Optional[Callable[[T, T], bool]] = None) -> int:
+    """
+    Searches sequence for any of the elements in search_elements.
+    Returns the index of the first match, or -1 if not found.
+    Equivalent to std::find_first_of.
+    """
+    # If no predicate, use set for O(1) lookup if possible, but only if elements are hashable
+    # But to stay generic and support unhashable types, we usually do O(N*M).
+    # IF predicate is provided, we MUST do O(N*M).
+    
+    for i, val in enumerate(sequence):
+        for s_val in search_elements:
+            if predicate:
+                if predicate(val, s_val):
+                    return i
+            else:
+                if val == s_val:
+                    return i
+    return -1
+
+def adjacent_find(sequence: Sequence[T], predicate: Optional[Callable[[T, T], bool]] = None) -> int:
+    """
+    Searches for two consecutive identical elements.
+    Returns the index of the first element of the pair, or -1.
+    Equivalent to std::adjacent_find.
+    """
+    n = len(sequence)
+    if n < 2:
+        return -1
+        
+    iterator = iter(sequence)
+    prev = next(iterator)
+    idx = 0
+    
+    for curr in iterator:
+        if predicate:
+            if predicate(prev, curr):
+                return idx
+        else:
+            if prev == curr:
+                return idx
+        prev = curr
+        idx += 1
+        
+    return -1
+
+def search_n(sequence: Sequence[T], count: int, value: T, 
+             predicate: Optional[Callable[[T, T], bool]] = None) -> int:
+    """
+    Searches for a sequence of 'count' consecutive elements equal to value.
+    Returns the starting index, or -1.
+    Equivalent to std::search_n.
+    """
+    if count <= 0:
+        return 0
+    
+    n = len(sequence)
+    if n < count:
+        return -1
+        
+    # Naive O(N*count) is safe but can be optimized to O(N) easily.
+    # We just need to count consecutive matches.
+    current_count = 0
+    start_idx = -1
+    
+    for i, item in enumerate(sequence):
+        match = False
+        if predicate:
+            match = predicate(item, value)
+        else:
+            match = (item == value)
+            
+        if match:
+            if current_count == 0:
+                start_idx = i
+            current_count += 1
+            if current_count == count:
+                return start_idx
+        else:
+            current_count = 0
+            start_idx = -1
+            
+    return -1
