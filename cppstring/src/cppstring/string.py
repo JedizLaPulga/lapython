@@ -231,13 +231,7 @@ class String(Sequence):
     def resize(self, n: int, c: str = '\0'):
         if n < self._size:
             self._size = n
-            # Optional: Clear out for GC
-            tgt = self._small if self._is_small else self._large
-            for i in range(n, self._size): # Wait, self._size is already n here 
-                # Original size logic needed
-                pass 
-            # Correct logic:
-            # We already set size. The data remains but is ignored.
+            # Data remains but is inaccessible, strictly safe.
         elif n > self._size:
             if n > self._capacity:
                 self.reserve(n)
