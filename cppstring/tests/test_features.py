@@ -98,3 +98,37 @@ def test_getline():
     
     getline(stream2, s2, ';') # Should match end of file logic
     assert s2 == "part2"
+
+def test_advanced_searches():
+    s = String("hello world")
+    
+    # find_first_of
+    assert s.find_first_of("aeiou") == 1 # 'e'
+    assert s.find_first_of("xyz") == -1
+    assert s.find_first_of("rl", 5) == 8 # 'r' at 8 in "world" (pos 6 is 'w', 7 'o', 8 'r')
+    
+    # find_last_of
+    assert s.find_last_of("aeiou") == 7 # 'o' in world
+    assert s.find_last_of("l") == 9 # 'l' in world
+    assert s.find_last_of("l", 5) == 3 # 'l' in hello
+    
+    # find_first_not_of
+    s2 = String("look")
+    assert s2.find_first_not_of("ol") == 3 # 'k'
+    
+    # find_last_not_of
+    assert s2.find_last_not_of("ok") == 0 # 'l'
+
+def test_case_conversions():
+    s = String("Hello World")
+    s.to_lower()
+    assert s == "hello world"
+    
+    s.to_upper()
+    assert s == "HELLO WORLD"
+    
+    # Test expansion
+    s_german = String("mß")
+    s_german.to_upper()
+    assert s_german == "MSS" # 'ß' -> 'SS'
+    assert len(s_german) == 3

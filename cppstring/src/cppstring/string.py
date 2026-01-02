@@ -302,6 +302,74 @@ class String(Sequence):
         if s > o: return 1
         return 0
 
+    def find_first_of(self, chars: str, pos: int = 0) -> int:
+        """Finds the first occurrence of any character from the set."""
+        if pos < 0: pos += self._size
+        if pos < 0: pos = 0
+        
+        src = self._small if self._is_small else self._large
+        charset = set(chars)
+        for i in range(pos, self._size):
+            if src[i] in charset:
+                return i
+        return -1
+
+    def find_last_of(self, chars: str, pos: int = -1) -> int:
+        """Finds the last occurrence of any character from the set at or before pos."""
+        if pos == -1 or pos >= self._size:
+            pos = self._size - 1
+        elif pos < 0:
+            pos += self._size
+        
+        if pos < 0: return -1 # Still negative? Empty or out of bounds
+
+        src = self._small if self._is_small else self._large
+        charset = set(chars)
+        for i in range(pos, -1, -1):
+            if src[i] in charset:
+                return i
+        return -1
+
+    def find_first_not_of(self, chars: str, pos: int = 0) -> int:
+        """Finds the first occurrence of any character NOT from the set."""
+        if pos < 0: pos += self._size
+        if pos < 0: pos = 0
+        
+        src = self._small if self._is_small else self._large
+        charset = set(chars)
+        for i in range(pos, self._size):
+            if src[i] not in charset:
+                return i
+        return -1
+
+    def find_last_not_of(self, chars: str, pos: int = -1) -> int:
+        """Finds the last occurrence of any character NOT from the set at or before pos."""
+        if pos == -1 or pos >= self._size:
+            pos = self._size - 1
+        elif pos < 0:
+            pos += self._size
+            
+        if pos < 0: return -1
+
+        src = self._small if self._is_small else self._large
+        charset = set(chars)
+        for i in range(pos, -1, -1):
+            if src[i] not in charset:
+                return i
+        return -1
+
+    # --------------------- Case Conversions ---------------------
+    def to_upper(self) -> 'String':
+        """Converts string to uppercase in-place."""
+        # Using c_str() and assign() ensures correct handling of characters that change length (e.g. 'ß')
+        self.assign(self.c_str().upper())
+        return self
+
+    def to_lower(self) -> 'String':
+        """Converts string to lowercase in-place."""
+        self.assign(self.c_str().lower())
+        return self
+
 
     # --------------------- Comparisons ---------------------
     def __eq__(self, other: object) -> bool:
