@@ -302,6 +302,54 @@ class String(Sequence):
         if s > o: return 1
         return 0
 
+
+    # --------------------- Comparisons ---------------------
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) == 0
+        return NotImplemented
+
+    def __ne__(self, other: object) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) != 0
+        return NotImplemented
+
+    def __lt__(self, other: Union[String, str]) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) < 0
+        return NotImplemented
+
+    def __le__(self, other: Union[String, str]) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) <= 0
+        return NotImplemented
+
+    def __gt__(self, other: Union[String, str]) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) > 0
+        return NotImplemented
+
+    def __ge__(self, other: Union[String, str]) -> bool:
+        if isinstance(other, (String, str)):
+            return self.compare(other) >= 0
+        return NotImplemented
+
+    # --------------------- Predicates (C++20) ---------------------
+    def starts_with(self, prefix: Union[str, 'String', 'StringView']) -> bool:
+        # Avoid circular import if possible, explicit check
+        p_str = str(prefix)
+        if self._size < len(p_str):
+            return False
+        # Optimization: check directly
+        return self.c_str().startswith(p_str)
+
+    def ends_with(self, suffix: Union[str, 'String', 'StringView']) -> bool:
+        s_str = str(suffix)
+        return self.c_str().endswith(s_str)
+
+    def contains(self, sub: Union[str, 'String', 'StringView']) -> bool:
+        return self.find(str(sub)) != -1
+
     # --------------------- Iteration ---------------------
     def __iter__(self) -> Iterator[str]:
         src = self._small if self._is_small else self._large
