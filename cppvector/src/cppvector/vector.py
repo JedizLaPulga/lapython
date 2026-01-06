@@ -15,6 +15,7 @@ from cppbase import Sequence
 # =================================================================
 class Vector(Sequence, Generic[T]):
     _SVO_CAP = 8
+    __slots__ = ('_size', '_is_small', '_small', '_large', '_capacity')
 
     def __init__(self, source: Iterable[T] | None = None):
         self._size = 0
@@ -170,6 +171,8 @@ class Vector(Sequence, Generic[T]):
 # 2. vector<bool> — bit-packed specialization
 # =================================================================
 class VectorBool:
+    __slots__ = ('_data', '_size')
+
     def __init__(self, source=None):
         self._data = bytearray()
         self._size = 0
@@ -213,6 +216,8 @@ class VectorBool:
 # =================================================================
 class NumericVector:
     """Blazing fast vector for int/float with full NumPy interop"""
+    __slots__ = ('array',)
+
     def __init__(self, data=None, dtype='q'):  # 'q' = int64, 'd' = double
         self.array = array.array(dtype)
         if data:
