@@ -3,27 +3,35 @@ import math
 from .engine import RandomEngine, DefaultRandomEngine
 
 class UniformIntDistribution:
+    """Uniform integer distribution over [a, b]."""
+    
     def __init__(self, a: int = 0, b: int = 2147483647):
         self._a = a
         self._b = b
 
     def __call__(self, engine: RandomEngine) -> int:
-        if isinstance(engine, DefaultRandomEngine):
-            return engine._randint(self._a, self._b)
-        else:
-            # Generic fallback
-            return engine._randint(self._a, self._b)
+        return engine._randint(self._a, self._b)
+
 
 class UniformRealDistribution:
+    """Uniform real distribution over [a, b)."""
+    
     def __init__(self, a: float = 0.0, b: float = 1.0):
         self._a = a
         self._b = b
     
     def __call__(self, engine: RandomEngine) -> float:
-        r = engine._random() # [0, 1)
+        r = engine._random()  # [0, 1)
         return self._a + r * (self._b - self._a)
 
+
 class NormalDistribution:
+    """Normal (Gaussian) distribution using Box-Muller transform.
+    
+    Warning: This class is NOT thread-safe. The Box-Muller implementation
+    caches a spare value between calls. Use separate instances per thread.
+    """
+    
     def __init__(self, mean: float = 0.0, stddev: float = 1.0):
         self._mean = mean
         self._stddev = stddev

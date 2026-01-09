@@ -284,16 +284,16 @@ class String(Sequence):
         return s.find(sub, pos)
 
     def rfind(self, sub: str, pos: int = -1) -> int:
+        """Find last occurrence of sub at or before pos.
+        
+        C++ rfind(str, pos) searches for last occurrence starting at or before pos.
+        """
         s = self.c_str()
-        if pos == -1:
+        if pos == -1 or pos >= self._size:
             return s.rfind(sub)
-        return s.rfind(sub, 0, pos + len(sub)) # Adjusting pos to match C++ behavior semantics closely or assume standard python rfind?
-        # C++ rfind(str, pos) searches for last occurrence at or BEFORE pos.
-        # Python rfind(str, start, end) searches within range.
-        # If pos is provided in C++, it effectively means "ignore anything after index pos"
-        # So in Python it corresponds to end=pos + len(sub)? Or something.
-        # Let's just use Python defaults.
-        return s.rfind(sub, 0, pos if pos != -1 else None)
+        # C++ semantics: search for sub ending at or before pos
+        # Python rfind(sub, start, end) searches in [start, end)
+        return s.rfind(sub, 0, pos + 1)
 
     def compare(self, other: Union[str, 'String']) -> int:
         s = self.c_str()

@@ -38,10 +38,17 @@ class Optional(Generic[T]):
         self._active = False
         self._value = None
         
-    def emplace(self, *args, **kwargs):
-        # Difficult to fully emulate without type constructor knowledge
-        # Assuming we just pass the object
-        pass 
+    def emplace(self, value: T) -> T:
+        """Constructs value in-place. In Python, this simply assigns the value.
+        
+        For C++ semantics where emplace constructs via args, use:
+            opt.emplace(MyClass(arg1, arg2))
+        
+        Returns the emplaced value.
+        """
+        self._value = value
+        self._active = True
+        return self._value
         
     def swap(self, other: 'Optional[T]'):
         self._value, other._value = other._value, self._value

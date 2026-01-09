@@ -35,6 +35,7 @@ class TestUnorderedMap(unittest.TestCase):
         # Force collision by small bucket count or mock hash? 
         # Standard hash is unpredictable in Python run-to-run, but low bucket count ensures chaining.
         m = UnorderedMap(bucket_count=1) # Everything in bucket 0
+        m.max_load_factor(10.0)  # Prevent automatic rehash
         m["x"] = 1
         m["y"] = 2
         

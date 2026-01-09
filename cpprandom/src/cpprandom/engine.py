@@ -1,14 +1,24 @@
 import random
 from typing import Optional
+from abc import ABC, abstractmethod
 
-class RandomEngine:
-    """Base interface for random engines."""
-    def __init__(self, seed: Optional[int] = None):
-        pass
+class RandomEngine(ABC):
+    """Abstract base interface for random engines."""
+    
+    @abstractmethod
     def __call__(self) -> int:
-        pass
-    def min(self) -> int: return 0
-    def max(self) -> int: return 2**32 - 1
+        """Generate next random number."""
+        ...
+    
+    @abstractmethod
+    def min(self) -> int:
+        """Return minimum possible value."""
+        ...
+    
+    @abstractmethod
+    def max(self) -> int:
+        """Return maximum possible value."""
+        ...
 
 class DefaultRandomEngine(RandomEngine):
     """
