@@ -1,5 +1,8 @@
 import unittest
-from cpputility import Pair, Optional, nullopt, Variant, holds_alternative, get, visit
+from cpputility import (
+    Pair, Optional, nullopt, Variant, holds_alternative, get, visit,
+    swap, exchange, as_const, cmp_equal, cmp_less, in_range
+)
 
 class TestPair(unittest.TestCase):
     def test_basic(self):
@@ -73,6 +76,32 @@ class TestVariant(unittest.TestCase):
         v = Variant(10)
         res = visit(lambda x: x * 2, v)
         self.assertEqual(res, 20)
+
+class TestOps(unittest.TestCase):
+    def test_swap(self):
+        arr = [1, 2, 3]
+        swap(arr, 0, 2)
+        self.assertEqual(arr, [3, 2, 1])
+        
+    def test_exchange(self):
+        arr = [10]
+        old = exchange(arr, 0, 20)
+        self.assertEqual(old, 10)
+        self.assertEqual(arr[0], 20)
+        
+    def test_as_const(self):
+        self.assertEqual(as_const(42), 42)
+        
+    def test_cmp(self):
+        self.assertTrue(cmp_equal(10, 10))
+        self.assertFalse(cmp_equal(10, 20))
+        self.assertTrue(cmp_less(10, 20))
+        self.assertFalse(cmp_less(20, 10))
+        
+    def test_in_range(self):
+        self.assertTrue(in_range(5, 1, 10))
+        self.assertFalse(in_range(0, 1, 10))
+        self.assertFalse(in_range(11, 1, 10))
 
 if __name__ == '__main__':
     unittest.main()
