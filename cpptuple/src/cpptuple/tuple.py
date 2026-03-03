@@ -72,10 +72,41 @@ def tuple_cat(*tuples: Tuple) -> Tuple:
     return Tuple(*new_elems)
 
 def tie(*args):
-    # tie is harder in Python because we don't have true references to simple vars.
-    # We can't do x, y = 1, 2; tie(x, y) = some_tuple
-    # and have x, y update.
-    # Python does unpacking naturally: x, y = some_tuple[0], some_tuple[1]
-    # So tie might be redundant or strictly for "Unpacking into mutable containers".
-    # Skipping for now as it's not pythonic or easily doable without ref wrappers.
+    """
+    tie is harder in Python because we don't have true references to simple vars.
+    We can't do x, y = 1, 2; tie(x, y) = some_tuple
+    and have x, y update.
+    Skipping for now as it's not pythonic or easily doable without ref wrappers.
+    """
     pass
+
+def apply(func: Any, t: Tuple) -> Any:
+    """
+    Invokes the Callable object func with a tuple of arguments.
+    """
+    return func(*t)
+
+def make_from_tuple(type_: type, t: Tuple) -> Any:
+    """
+    Constructs an object of type T, using the elements of the tuple t as the arguments to the constructor.
+    """
+    return type_(*t)
+
+def tuple_size(t: Tuple) -> int:
+    """
+    Obtains the number of elements of a tuple.
+    """
+    return len(t)
+
+def tuple_element(index: int, t: Tuple) -> type:
+    """
+    Obtains the type of the specified element.
+    """
+    return type(t[index])
+
+def forward_as_tuple(*args: Any) -> Tuple:
+    """
+    Constructs a tuple of references to the arguments in args suitable for forwarding as arguments to a function.
+    In Python this is functionally equivalent to make_tuple.
+    """
+    return Tuple(*args)

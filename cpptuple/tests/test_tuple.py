@@ -1,5 +1,8 @@
 import pytest
-from cpptuple import Tuple, make_tuple, get, tuple_cat
+from cpptuple import (
+    Tuple, make_tuple, get, tuple_cat,
+    apply, make_from_tuple, tuple_size, tuple_element, forward_as_tuple
+)
 
 def test_tuple_creation():
     t = Tuple(1, "hello", 3.14)
@@ -56,3 +59,33 @@ def test_swap():
 def test_repr():
     t = Tuple(1, 'a')
     assert repr(t) == "Tuple(1, 'a')"
+
+def test_apply():
+    t = Tuple(1, 2, 3)
+    def add3(a, b, c):
+        return a + b + c
+    assert apply(add3, t) == 6
+
+def test_make_from_tuple():
+    class Obj:
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+    t = Tuple(10, 20)
+    obj = make_from_tuple(Obj, t)
+    assert obj.a == 10
+    assert obj.b == 20
+
+def test_tuple_size():
+    t = Tuple(1, 2, 3)
+    assert tuple_size(t) == 3
+
+def test_tuple_element():
+    t = Tuple(1, "hello")
+    assert tuple_element(0, t) == int
+    assert tuple_element(1, t) == str
+
+def test_forward_as_tuple():
+    t = forward_as_tuple(1, 'x')
+    assert isinstance(t, Tuple)
+    assert tuple_size(t) == 2
