@@ -1,5 +1,8 @@
 import pytest
-from cppfunctional import Function, ReferenceWrapper, ref, cref, invoke
+from cppfunctional import (
+    Function, ReferenceWrapper, ref, cref, invoke,
+    bind, bind_front, bind_back, _1, _2, _3
+)
 
 def add(a, b):
     return a + b
@@ -45,3 +48,27 @@ def test_invoke():
     # Invoke with ref
     r_adder = ref(adder)
     assert invoke(r_adder, 5) == 15
+
+def test_bind():
+    def subtract(a, b):
+        return a - b
+        
+    bound_sub = bind(subtract, _1, _2)
+    assert bound_sub(10, 5) == 5
+    
+    bound_sub_rev = bind(subtract, _2, _1)
+    assert bound_sub_rev(10, 5) == -5
+    
+    bound_fixed = bind(subtract, 20, _1)
+    assert bound_fixed(5) == 15
+
+def test_bind_front_back():
+    def mix(a, b, c):
+        return a * 100 + b * 10 + c
+        
+    bf = bind_front(mix, 1, 2)
+    assert bf(3) == 123
+    
+    bb = bind_back(mix, 2, 3)
+    assert bb(1) == 123
+
