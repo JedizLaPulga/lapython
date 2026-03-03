@@ -8,6 +8,9 @@ Implementations of standard C++ utility types: `std::pair`, `std::optional`, `st
 *   **Pair**: Strictly typed pair `Pair[T1, T2]` with `.first` and `.second`.
 *   **Optional**: Null-safe wrapper `Optional[T]` ensuring explicit value access.
 *   **Variant**: Type-safe union `Variant[T1, T2, ...]` (simplified).
+*   **Any**: Type-safe container for single values of any type `Any()`.
+*   **Expected**: C++23 style error handling `Expected[T, E]`.
+*   **ReferenceWrapper**: `Ref[T]` and `ref()`, `cref()` object wrappers.
 
 ## usage
 
