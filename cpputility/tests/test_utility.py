@@ -4,8 +4,11 @@ from cpputility import (
     swap, exchange, as_const, cmp_equal, cmp_less, in_range,
     Any, make_any, any_cast, BadAnyCast,
     Expected, Unexpected, BadExpectedAccess,
-    Ref, ref, cref
+    Ref, ref, cref,
+    forward, move, move_if_noexcept, declval, to_underlying, unreachable,
+    integer_sequence, index_sequence, make_integer_sequence, make_index_sequence, index_sequence_for
 )
+from enum import Enum
 
 class TestPair(unittest.TestCase):
     def test_basic(self):
@@ -175,6 +178,41 @@ class TestReferenceWrapper(unittest.TestCase):
             
         r = ref(add)
         self.assertEqual(r(2, 3), 5)
+
+class TestUtilities(unittest.TestCase):
+    def test_forward_move_declval(self):
+        self.assertEqual(forward(42), 42)
+        self.assertEqual(move("test"), "test")
+        self.assertEqual(move_if_noexcept([1, 2]), [1, 2])
+        with self.assertRaises(RuntimeError):
+            declval()
+
+    def test_to_underlying_unreachable(self):
+        class MyEnum(Enum):
+            A = 1
+            B = 2
+        
+        self.assertEqual(to_underlying(MyEnum.B), 2)
+        with self.assertRaises(RuntimeError):
+            unreachable()
+
+class TestSequences(unittest.TestCase):
+    def test_integer_sequence(self):
+        seq = make_integer_sequence(int, 5)
+        self.assertEqual(seq.size, 5)
+        self.assertEqual(list(seq), [0, 1, 2, 3, 4])
+        self.assertEqual(repr(seq), "integer_sequence(int, 0, 1, 2, 3, 4)")
+        
+    def test_index_sequence(self):
+        seq = make_index_sequence(3)
+        self.assertEqual(seq.size, 3)
+        self.assertEqual(list(seq), [0, 1, 2])
+        self.assertEqual(repr(seq), "index_sequence(0, 1, 2)")
+        
+    def test_index_sequence_for(self):
+        seq = index_sequence_for("a", "b", "c", "d")
+        self.assertEqual(seq.size, 4)
+        self.assertEqual(list(seq), [0, 1, 2, 3])
 
 if __name__ == '__main__':
     unittest.main()

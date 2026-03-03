@@ -45,3 +45,42 @@ def cmp_greater_equal(t: int, u: int) -> bool:
 
 def in_range(t: int, minimum: int, maximum: int) -> bool:
     return minimum <= t <= maximum
+
+def forward(obj: T) -> T:
+    """
+    Casts an object to an rvalue if it is not an lvalue reference.
+    In Python, this is mostly a semantic marker.
+    """
+    return obj
+
+def move(obj: T) -> T:
+    """
+    Indicates that the object may be moved from.
+    In Python, this is mostly a semantic marker.
+    """
+    return obj
+
+def move_if_noexcept(obj: T) -> T:
+    """
+    Like move, but normally would not move if moving can throw.
+    In Python, this is mostly a semantic marker.
+    """
+    return obj
+
+def declval() -> Any:
+    """
+    Used for type-level computation. It should not be evaluated.
+    """
+    raise RuntimeError("declval can only be used in unevaluated contexts")
+
+def to_underlying(enum_val: Any) -> Any:
+    """
+    Converts an enumeration to its underlying type.
+    """
+    return enum_val.value
+
+def unreachable() -> Any:
+    """
+    Marks code that should not be reachable.
+    """
+    raise RuntimeError("unreachable code executed")

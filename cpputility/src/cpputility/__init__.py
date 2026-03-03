@@ -7,7 +7,12 @@ from .reference_wrapper import Ref, ref, cref
 from .ops import (
     swap, exchange, as_const,
     cmp_equal, cmp_not_equal, cmp_less, cmp_greater, cmp_less_equal, cmp_greater_equal,
-    in_range
+    in_range,
+    forward, move, move_if_noexcept, declval, to_underlying, unreachable
+)
+
+from .sequences import (
+    integer_sequence, index_sequence, make_integer_sequence, make_index_sequence, index_sequence_for
 )
 
 __all__ = [
@@ -19,5 +24,7 @@ __all__ = [
     'Ref', 'ref', 'cref',
     'swap', 'exchange', 'as_const',
     'cmp_equal', 'cmp_not_equal', 'cmp_less', 'cmp_greater', 'cmp_less_equal', 'cmp_greater_equal',
-    'in_range'
+    'in_range',
+    'forward', 'move', 'move_if_noexcept', 'declval', 'to_underlying', 'unreachable',
+    'integer_sequence', 'index_sequence', 'make_integer_sequence', 'make_index_sequence', 'index_sequence_for'
 ]
