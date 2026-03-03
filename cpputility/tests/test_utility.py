@@ -1,7 +1,10 @@
 import unittest
 from cpputility import (
     Pair, Optional, nullopt, Variant, holds_alternative, get, visit,
-    swap, exchange, as_const, cmp_equal, cmp_less, in_range
+    swap, exchange, as_const, cmp_equal, cmp_less, in_range,
+    Any, make_any, any_cast, BadAnyCast,
+    Expected, Unexpected, BadExpectedAccess,
+    Ref, ref, cref
 )
 
 class TestPair(unittest.TestCase):
@@ -102,6 +105,76 @@ class TestOps(unittest.TestCase):
         self.assertTrue(in_range(5, 1, 10))
         self.assertFalse(in_range(0, 1, 10))
         self.assertFalse(in_range(11, 1, 10))
+
+class TestAny(unittest.TestCase):
+    def test_basic(self):
+        a = Any(42)
+        self.assertTrue(a.has_value())
+        self.assertEqual(a.type(), int)
+        self.assertEqual(any_cast(a, int), 42)
+        
+        a = make_any("hello")
+        self.assertTrue(a.has_value())
+        self.assertEqual(a.type(), str)
+        self.assertEqual(any_cast(a, str), "hello")
+        
+    def test_empty(self):
+        a = Any()
+        self.assertFalse(a.has_value())
+        self.assertEqual(a.type(), type(None))
+        with self.assertRaises(BadAnyCast):
+            any_cast(a, int)
+            
+    def test_bad_cast(self):
+        a = Any(10)
+        with self.assertRaises(BadAnyCast):
+            any_cast(a, str)
+            
+    def test_reset(self):
+        a = Any(10)
+        a.reset()
+        self.assertFalse(a.has_value())
+
+class TestExpected(unittest.TestCase):
+    def test_value(self):
+        e: Expected[int, str] = Expected(42)
+        self.assertTrue(e.has_value())
+        self.assertTrue(e)
+        self.assertEqual(e.value(), 42)
+        self.assertEqual(e.value_or(100), 42)
+        with self.assertRaises(BadExpectedAccess):
+            e.error()
+            
+    def test_error(self):
+        e: Expected[int, str] = Expected(Unexpected("failed"))
+        self.assertFalse(e.has_value())
+        self.assertFalse(e)
+        self.assertEqual(e.error(), "failed")
+        self.assertEqual(e.value_or(100), 100)
+        with self.assertRaises(BadExpectedAccess):
+            e.value()
+
+    def test_equality(self):
+        self.assertEqual(Expected(10), Expected(10))
+        self.assertNotEqual(Expected(10), Expected(20))
+        self.assertEqual(Expected(Unexpected("err")), Expected(Unexpected("err")))
+        self.assertNotEqual(Expected(10), Expected(Unexpected(10)))
+
+class TestReferenceWrapper(unittest.TestCase):
+    def test_basic(self):
+        val = [1, 2, 3]
+        r = ref(val)
+        self.assertIs(r.get(), val)
+        
+        cr = cref(val)
+        self.assertIs(cr.get(), val)
+        
+    def test_call(self):
+        def add(a, b):
+            return a + b
+            
+        r = ref(add)
+        self.assertEqual(r(2, 3), 5)
 
 if __name__ == '__main__':
     unittest.main()
